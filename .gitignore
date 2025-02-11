@@ -1,0 +1,8 @@
+obj
+bin
+Migrations
+Main.db
+Main.db-shm
+Main.db-wal
+appsettings.json
+appsettings.Development.json
