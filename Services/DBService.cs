@@ -95,15 +95,20 @@ namespace WebServer.Services
             await _DbContext.SaveChangesAsync();
         }
 
-        public async Task<Test[]> GetTests()
+        public async Task<Test[]?> GetTests()
         {
-            Test[] tests = await _DbContext.Tests.ToArrayAsync();
+            Test[]? tests = await _DbContext.Tests.ToArrayAsync();
+
+            if (tests.Length == 0) return null;
+
             return tests;
         }
 
-        public async Task<Test[]> GetTests(string author)
+        public async Task<Test[]?> GetTests(string author)
         {
             var tests = await _DbContext.Tests.Select(t => t).Where(t => t.Author == author).ToArrayAsync();
+            
+            if (tests.Length == 0) return null;
 
             return tests;
         }

@@ -51,16 +51,16 @@ namespace WebServer.Interfaces
         /// </summary>
         /// <param name="name"></param>
         /// <param name="password"></param>
-        /// <returns>Return array of tests</returns>
-        Task<Test[]> GetTests();
+        /// <returns> Return a test array if exists otherwise null </returns>
+        Task<Test[]?> GetTests();
 
         /// <summary>
         /// Get all tests from the database 
         /// </summary>
         /// <param name="name"></param>
         /// <param name="password"></param>
-        /// <returns>Return array of tests</returns>
-        Task<Test[]> GetTests(string author);
+        /// <returns> Return a test array if exists otherwise null</returns>
+        Task<Test[]?> GetTests(string author);
 
         /// <summary>
         /// Add test to the database
