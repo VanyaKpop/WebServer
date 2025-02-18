@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WebServer.Interfaces;
 using WebServer.Models;
-using WebServer.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace WebServer.Controllers;
 
@@ -9,34 +10,15 @@ namespace WebServer.Controllers;
 [Route("[controller]")]
 public class ApiController : ControllerBase
 {
-
-    [HttpPost("PostUser")]
-    public async Task<ActionResult> PostUser([FromServices] IDBService service, [FromBody] UserRequest user)
+    [HttpGet("Users")]
+    [Authorize]
+    public async Task<IActionResult> GetUsers([FromServices] IDBService service)
     {
-        if (await service.IsUserExist(user.name))
-            return BadRequest("User with the same name alredy exist");
+        var comments = await service.GetUsers();
 
-        if (user.name == null || user.password == null)
-            return BadRequest();
+        if (comments is null) return NotFound();
 
-        await Task.Run(() => service.AddUser(user.name, user.password));
-
-        return Created();
-    }
-
-    [HttpGet("GetUser/{name}/{password}")]
-    public async Task<ActionResult> GetUser([FromServices] IDBService service, string name, string password)
-    {
-        if (await service.IsUserExist(name, password) == false)
-            return NotFound();
-
-        if (await service.IsUserExist(name, password) == true)
-            return BadRequest("User with the same name alredy exist");
-
-        if (name == null | password == null)
-            return BadRequest();
-
-        return Ok("Authorized");
+        return new ObjectResult(comments);
     }
 
     [HttpGet("Comments/{id}")]

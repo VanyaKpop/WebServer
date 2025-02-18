@@ -52,6 +52,20 @@ namespace WebServer.Services
             await _DbContext.SaveChangesAsync();
         }
 
+        public async Task<List<User?>> GetUsers()
+        {
+            var users = await Task.Run(() => _DbContext.profiles.ToList());
+
+            return users;
+        }
+
+        public User? GetUser(string username, string password)
+        {
+            var user =  _DbContext.profiles.FirstOrDefault(u => u.name == username && u.password == password);
+
+            return user;
+        }
+
         public async void DeleteUser(long id)
         {
             await Task.Run(() =>

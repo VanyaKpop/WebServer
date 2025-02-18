@@ -17,6 +17,10 @@ namespace WebServer.Interfaces
         /// <param name="password"></param>
         void AddUser(string name, string password);
 
+        Task<List<User>> GetUsers();
+
+        User? GetUser(string username, string password);
+
         /// <summary>
         /// Delete user from row in Database
         /// </summary>
