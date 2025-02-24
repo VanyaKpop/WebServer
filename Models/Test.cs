@@ -15,6 +15,5 @@
         public required string Name { get; set; }
         public required string Author { get; set; }
         public required string DataJson { get; set; }
-        public required string key { get; set; }
     }
 }

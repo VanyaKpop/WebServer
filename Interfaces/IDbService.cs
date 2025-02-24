@@ -17,8 +17,14 @@ namespace WebServer.Interfaces
         /// <param name="password"></param>
         void AddUser(string name, string password);
 
-        Task<List<User>> GetUsers();
 
+        /// <summary>
+        /// Find user from DB by username and password 
+        /// use it for authorization
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="password"></param>
+        /// <returns>return user object </returns>
         User? GetUser(string username, string password);
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace WebServer.Interfaces
         /// Get user by id
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>User object</returns>
+        /// <returns>return User object</returns>
         Task<User>? GetUserById(long id);
 
         /// <summary>
@@ -65,6 +71,14 @@ namespace WebServer.Interfaces
         /// <param name="password"></param>
         /// <returns> Return a test array if exists otherwise null</returns>
         Task<Test[]?> GetTests(string author);
+
+        /// <summary>
+        /// Get one test from the database by id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="password"></param>
+        /// <returns> Return a test if exists otherwise null</returns>
+        Task<Test?> GetTest(long id);
 
         /// <summary>
         /// Add test to the database

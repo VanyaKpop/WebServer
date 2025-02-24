@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using WebServer.Models;
 using Microsoft.AspNetCore.Cors;
+using System.Text.RegularExpressions;
 
 namespace WebServer.Controllers;
 
@@ -13,8 +14,10 @@ public record GetForeignTokenResponse(string Token);
 
 [ApiController]
 [Route("Auth")]
-public class AuthorizationController : Controller
+public partial class AuthorizationController : Controller
 {
+    [GeneratedRegex("^[a-zA-Z0-9_]+$")]
+    private static partial Regex IsUsernameValid();
     private ILogger<AuthorizationController> _logger;
 
     public AuthorizationController(ILogger<AuthorizationController> logger){
@@ -24,26 +27,30 @@ public class AuthorizationController : Controller
     [HttpPost("Register")]
     public async Task<ActionResult> Register([FromServices] IDBService service, [FromBody] UserRequest user)
     {
-        if (await service.IsUserExist(user.name))
+        if (await service.IsUserExist(user.Username))
             return BadRequest("User with the same name alredy exist");
 
-        if (user.name == null || user.password == null)
+        if (!IsUsernameValid().IsMatch(user.Username) || user.Username.Contains("__") || user.Username.StartsWith('_') || user.Username.Length > 48 || user.Username.Length < 3)
+        {
+            return ValidationProblem("Username can only contain alphanumeric characters and 3-48 characters");
+        }
+        if (user.Username == null || user.Password == null)
             return BadRequest();
 
-        await Task.Run(() => service.AddUser(user.name, user.password));
+        await Task.Run(() => service.AddUser(user.Username, user.Password));
 
         return Created();
     }
 
-    private ClaimsIdentity GetIdentity([FromServices] IDBService service, string username, string password)
+    private ClaimsIdentity? GetIdentity([FromServices] IDBService service, string username, string password)
     {
-        User person = service.GetUser(username, password);
+        User? person = service.GetUser(username, password);
         if (person != null)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, person.name),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, person.role)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, person.Username),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role)
             };
             ClaimsIdentity claimsIdentity =
             new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
@@ -65,8 +72,8 @@ public class AuthorizationController : Controller
             return BadRequest(new { errorText = "Invalid username or password." });
         }
 
-        if (await service.IsUserExist(username, password) == false)
-        return NotFound();
+        if (await service.IsUserExist(username) == false)
+            return NotFound();
 
         if (username == null | password == null)
             return BadRequest("username or password is null");
