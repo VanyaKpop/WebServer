@@ -62,7 +62,7 @@ namespace WebServer.Interfaces
         /// <param name="name"></param>
         /// <param name="password"></param>
         /// <returns> Return a test array if exists otherwise null </returns>
-        Task<Test[]?> GetTests();
+        Task<List<Test>?> GetTests();
 
         /// <summary>
         /// Get all tests from the database 
@@ -70,7 +70,7 @@ namespace WebServer.Interfaces
         /// <param name="name"></param>
         /// <param name="password"></param>
         /// <returns> Return a test array if exists otherwise null</returns>
-        Task<Test[]?> GetTests(string author);
+        Task<List<Test>?> GetTests(string author);
 
         /// <summary>
         /// Get one test from the database by id

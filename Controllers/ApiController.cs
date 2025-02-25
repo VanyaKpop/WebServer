@@ -2,7 +2,16 @@ using Microsoft.AspNetCore.Mvc;
 using WebServer.Interfaces;
 using WebServer.Models;
 using Microsoft.AspNetCore.Authorization;
+
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Mysqlx;
+
 
 namespace WebServer.Controllers;
 
@@ -25,9 +34,16 @@ public class ApiController : ControllerBase
     [HttpPost("PostTest")]
     public IActionResult PostTest([FromServices] IDBService service, [FromBody] TestRequest testRequest)
     {
-        //if (testRequest is null || testRequest.Author is null || testRequest.Name is null || testRequest.DataJson is null) return BadRequest();
+        if (testRequest is null || testRequest.Author is null || testRequest.Name is null || testRequest.Questions is null) return BadRequest();
 
-        service.AddTest(testRequest);
+        try
+        {
+            service.AddTest(testRequest);
+        }
+        catch 
+        {
+            return BadRequest();
+        }
 
         return Created();
     }
@@ -39,7 +55,7 @@ public class ApiController : ControllerBase
         var tests = await service.GetTests();
         if (tests is null) return NotFound();
 
-        return new ObjectResult(tests);
+        return new JsonResult(tests);
     }
 
     [HttpGet("GetTests/{Author}")]
