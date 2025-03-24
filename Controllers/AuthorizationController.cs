@@ -62,20 +62,20 @@ public partial class AuthorizationController : Controller
         return null;
     }
 
-    [HttpGet("Login/{username}/{password}")]
-    public async Task<ActionResult> Login([FromServices] IDBService service, string username, string password)
+    [HttpPost("Login")]
+    public async Task<ActionResult> Login([FromServices] IDBService service, [FromBody] UserRequest userRequest)
     {
-        var identity = GetIdentity(service, username, password);
+        var identity = GetIdentity(service, userRequest.Username, userRequest.Password);
 
         if (identity == null)
         {
             return BadRequest(new { errorText = "Invalid username or password." });
         }
 
-        if (await service.IsUserExist(username) == false)
+        if (await service.IsUserExist(userRequest.Username) == false)
             return NotFound();
 
-        if (username == null | password == null)
+        if (userRequest.Username == null | userRequest.Username == null)
             return BadRequest("username or password is null");
 
 

@@ -122,7 +122,7 @@ namespace WebServer.Services
 
         public async Task<List<Test>?> GetTests(string author)
         {
-            var tests = await _DbContext.Tests.Include(t => t.Questions).ThenInclude(a => a.Answers).Select(t => t).Where(t => t.Author == author).ToListAsync();
+            var tests = await _DbContext.Tests.Select(t => t).Where(t => t.Author == author).Include(t => t.Questions).ThenInclude(a => a.Answers).ToListAsync();
 
             if (tests.Count() == 0) return null;
 
